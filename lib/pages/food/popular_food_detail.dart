@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:food_delivery/controllers/cart_controller.dart';
+import 'package:food_delivery/pages/cart/cart_page.dart';
 import 'package:food_delivery/utils/app_constants.dart';
 import 'package:food_delivery/utils/dimensions.dart';
 import 'package:food_delivery/widgets/app_column.dart';
@@ -72,9 +73,14 @@ class PopularFoodDetail extends StatelessWidget {
                        Get.find<PopularProductController>().totalItems>=1?
                        Positioned(
                          right:0, top:0,
-                         child: AppIcon(icon: Icons.circle, size: 20,
-                           iconColor: Colors.transparent,
-                           backgroundColor: AppColors.mainColor,),
+                         child: GestureDetector(
+                           onTap:(){
+                             Get.to(()=>CartPage());
+                   },
+                           child: AppIcon(icon: Icons.circle, size: 20,
+                             iconColor: Colors.transparent,
+                             backgroundColor: AppColors.mainColor,),
+                         ),
                        ):
                           Container(),
                        Get.find<PopularProductController>().totalItems>=1?

@@ -159,7 +159,7 @@ class CartPage extends StatelessWidget {
           ))
         ],
       ),
-        bottomNavigationBar: GetBuilder<PopularProductController>(builder: (popularProduct){
+        bottomNavigationBar: GetBuilder<CartController>(builder: (cartController){
           return Container(
             height: Dimensions.bottomHeightBar,
             padding: EdgeInsets.only(top: Dimensions.height30, bottom:Dimensions.height30, left: Dimensions.width20 , right: Dimensions.width20),
@@ -184,7 +184,7 @@ class CartPage extends StatelessWidget {
                     children: [
 
                       SizedBox(width: Dimensions.width10/2,),
-                      BigText(text:popularProduct.inCartItems.toString()),
+                      BigText(text:"\D\H\S "+cartController.totalAmount.toString()),
                       SizedBox(width: Dimensions.width10/2,),
 
                     ],
@@ -197,7 +197,7 @@ class CartPage extends StatelessWidget {
                   child: Container(
                     padding: EdgeInsets.only(top: Dimensions.height20 , bottom: Dimensions.height20, left: Dimensions.width20, right: Dimensions.width20),
 
-                    child: BigText(text: " | Add to cart",color: Colors.white,),
+                    child: BigText(text: "Check out", color: Colors.white,),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(Dimensions.radius20),
                         color: AppColors.mainColor

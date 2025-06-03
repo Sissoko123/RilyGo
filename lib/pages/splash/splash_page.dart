@@ -6,6 +6,10 @@ import 'package:food_delivery/routes/route_helper.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
+import '../../controllers/popular_product_controller.dart';
+import '../../controllers/recommended_product_controller.dart';
+import '../../utils/dimensions.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -17,9 +21,13 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
   late Animation<double> animation;
   late AnimationController controller;
 
+  Future<void> _loadResource() async {
+    await Get.find<PopularProductController>().getPopularProductList();
+    await Get.find<RecommendedProductController>().getRecommendedProductList();
+  }
+
   @override
   void initState(){
-
     /*
     AnyClass(){
     newObject(){
@@ -30,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
       x = x.newObject()
     */
     super.initState();
+    _loadResource();
     controller = AnimationController(
         vsync: this,
         duration: const Duration(seconds: 2))..forward();
@@ -51,8 +60,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ScaleTransition(scale: animation,
-          child: Center(child: Image.asset("assets/image/logo1.png", width: 250,))),
-          Center(child: Image.asset("assets/image/logo2.png", width: 250,))
+          child: Center(child: Image.asset("assets/image/logo0.png",
+            width: Dimensions.splashImg,))),
+          /*Center(child: Image.asset("assets/image/logo2.png",
+            width: Dimensions.splashImg,))*/
 
         ],
       ),

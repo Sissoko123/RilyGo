@@ -60,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           ScaleTransition(scale: animation,
-          child: Center(child: Image.asset("assets/image/logo0.png",
+          child: Center(child: Image.asset("assets/image/food.png",
             width: Dimensions.splashImg,))),
           /*Center(child: Image.asset("assets/image/logo2.png",
             width: Dimensions.splashImg,))*/

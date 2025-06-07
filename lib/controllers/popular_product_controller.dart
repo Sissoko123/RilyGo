@@ -9,6 +9,7 @@ import 'cart_controller.dart';
 class PopularProductController extends GetxController{
   final PopularProductRepo popularProductRepo;
   PopularProductController({required this.popularProductRepo});
+
   List<ProductModel> _popularProductList=[];
   List<ProductModel> get popularProductList => _popularProductList;
   late CartController _cart;
@@ -20,6 +21,12 @@ class PopularProductController extends GetxController{
   int get quantity=>_quantity;
   int _inCartItems=0;
   int get inCartItems=>_inCartItems+_quantity;
+
+  @override
+  void onInit() {
+    super.onInit();
+    getPopularProductList();
+  }
 
   Future<void> getPopularProductList()async {
     print("Being called");
@@ -51,8 +58,8 @@ class PopularProductController extends GetxController{
   int checkQuantity(int quantity){
     if((_inCartItems+quantity)<0){
       Get.snackbar("Item count", "You can't reduce more !",
-      backgroundColor: AppColors.mainColor,
-      colorText: Colors.white,
+        backgroundColor: AppColors.mainColor,
+        colorText: Colors.white,
       );
       if(_inCartItems>0){
         _quantity = -_inCartItems;
@@ -86,14 +93,14 @@ class PopularProductController extends GetxController{
   }
 
   void addItem(ProductModel product){
-      _cart.addItem(product, quantity);
+    _cart.addItem(product, quantity);
 
-      _quantity=0;
-      _inCartItems=_cart.getQuantity(product);
+    _quantity=0;
+    _inCartItems=_cart.getQuantity(product);
 
-      _cart.items.forEach((key, value){
-        print("The id is "+value.id.toString()+" The quantity is "+value.quantity.toString());
-      });
+    _cart.items.forEach((key, value){
+      print("The id is "+value.id.toString()+" The quantity is "+value.quantity.toString());
+    });
     update();
   }
 

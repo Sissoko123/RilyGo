@@ -55,9 +55,9 @@ class RecommendedFoodDetail extends StatelessWidget {
                         Get.find<PopularProductController>().totalItems>=1?
                         Positioned(
                           right:0, top:0,
-                            child: AppIcon(icon: Icons.circle, size: 20,
-                              iconColor: Colors.transparent,
-                              backgroundColor: AppColors.mainColor,),
+                          child: AppIcon(icon: Icons.circle, size: 20,
+                            iconColor: Colors.transparent,
+                            backgroundColor: AppColors.mainColor,),
                         ):
                         Container(),
                         Get.find<PopularProductController>().totalItems>=1?
@@ -83,13 +83,13 @@ class RecommendedFoodDetail extends StatelessWidget {
                   padding: EdgeInsets.only(top: 5, bottom: 10),
                   decoration: BoxDecoration(
                       color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topRight:Radius.circular(Dimensions.radius20),
-                        topLeft:Radius.circular(Dimensions.radius20)
-                    )
+                      borderRadius: BorderRadius.only(
+                          topRight:Radius.circular(Dimensions.radius20),
+                          topLeft:Radius.circular(Dimensions.radius20)
+                      )
 
 
-            ),
+                  ),
                 )
             ),
             pinned: true,
@@ -97,21 +97,21 @@ class RecommendedFoodDetail extends StatelessWidget {
             expandedHeight: 300,
             flexibleSpace: FlexibleSpaceBar(
               background: Image.network(
-                  AppConstants.BASE_URL+AppConstants.UPLOAD_URL+product.img!,
+                AppConstants.BASE_URL+AppConstants.UPLOAD_URL+product.img!,
                 width: double.maxFinite,
                 fit: BoxFit.cover,
               ),
             ),
           ),
           SliverToBoxAdapter(
-            child: Column(
-              children: [
-                Container(
-                  child: ExpandableTextWidget(text:product.description!),
-                  margin: EdgeInsets.only(left: Dimensions.width20 , right: Dimensions.width20),
-                )
-              ],
-            )
+              child: Column(
+                children: [
+                  Container(
+                    child: ExpandableTextWidget(text:product.description!),
+                    margin: EdgeInsets.only(left: Dimensions.width20 , right: Dimensions.width20),
+                  )
+                ],
+              )
           )
         ],
       ),
@@ -178,17 +178,17 @@ class RecommendedFoodDetail extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){
-                      controller.addItem(product);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.only(top: Dimensions.height20 , bottom: Dimensions.height20, left: Dimensions.width20, right: Dimensions.width20),
-                      child: BigText(text: "\D\H\S ${product.price!} | Add to cart",color: Colors.white,),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(Dimensions.radius20),
-                          color: AppColors.mainColor
-                      ),
-                    )
+                      onTap: (){
+                        controller.addItem(product);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.only(top: Dimensions.height20 , bottom: Dimensions.height20, left: Dimensions.width20, right: Dimensions.width20),
+                        child: BigText(text: "\D\H\S ${product.price!} | Add to cart",color: Colors.white,),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(Dimensions.radius20),
+                            color: AppColors.mainColor
+                        ),
+                      )
                   )
                 ],
               ),

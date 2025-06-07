@@ -45,7 +45,16 @@ class CartHistory extends StatelessWidget {
     List<int> itemsPerOrder = cartItemsPerOrderToList(); //3,2,3
 
     var listCounter=0;
-
+    Widget timeWidget(int index){
+      var outputDate = DateTime.now().toString();
+        if(index<getCartHistoryList.length){
+          DateTime parseDate= DateFormat("yyyy-MM-dd HH:mm:ss").parse(getCartHistoryList[listCounter].time!);
+          var inputDate = DateTime.parse(parseDate.toString());
+          var outputFormat = DateFormat("MM/dd/yyyy hh:mm a");
+          outputDate = outputFormat.format(inputDate);
+        }
+        return BigText(text:outputDate);
+    }
     return Scaffold(
 
       body: Column(
@@ -84,13 +93,7 @@ class CartHistory extends StatelessWidget {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ((){
-                              DateTime parseDate= DateFormat("yyyy-MM-dd HH:mm:ss").parse(getCartHistoryList[listCounter].time!);
-                              var inputDate = DateTime.parse(parseDate.toString());
-                              var outputFormat = DateFormat("MM/dd/yyyy hh:mm a");
-                              var outputDate = outputFormat.format(inputDate);
-                              return BigText(text:outputDate);
-                            }()),
+                            timeWidget(listCounter),
                             SizedBox(height: Dimensions.height10,),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -90,6 +90,8 @@ class LocationController extends GetxController implements GetxService{
       }catch(e){
         print(e);
       }
+      _loading=false;
+      update();
     }
   }
 
@@ -155,6 +157,7 @@ class LocationController extends GetxController implements GetxService{
      }else{
        _addressList=[];
        _allAddressList=[];
+       print("........not added.....");
      }
      update();
   }
@@ -166,5 +169,8 @@ class LocationController extends GetxController implements GetxService{
     _addressList=[];
     _allAddressList=[];
     update();
+  }
+  String getUserAddressFromLocalStorage(){
+    return locationRepo.getUserAddress();
   }
 }

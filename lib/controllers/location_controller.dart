@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
@@ -38,7 +39,131 @@ class LocationController extends GetxController implements GetxService{
   bool get loading => _loading;
   Position get position => _position;
   Position get pickPosition => _pickPosition;
+  /*
+    for service zone
+   */
+  bool _isLoading = false;
+  bool get isLoading=>_isLoading;
 
+  /*
+    whether the user is in service zone or not
+   */
+  bool _inZone = false;
+  bool get inZone =>_inZone;
+  /*
+    showing and hiding the button as the map loads
+   */
+  bool _buttonDisabled=true;
+  bool get buttonDisabled =>_buttonDisabled;
+
+  Future<void> getCurrentLocation(
+      bool fromAddress, {
+        required GoogleMapController mapController,
+        LatLng? defaultLatlng,
+        bool notify = true,
+      }) async {
+    _loading = true;
+    if (notify) update();
+
+    AddressModel _addressModel;
+    late Position _myPosition;
+
+    try {
+      // Obtenir la position actuelle
+      _myPosition = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.best,
+      );
+
+      // Sauvegarder la position dans la variable appropriée
+      if (fromAddress) {
+        _position = _myPosition;
+      } else {
+        _pickPosition = _myPosition;
+      }
+
+      // Déplacer la caméra vers la nouvelle position
+      mapController.animateCamera(
+        CameraUpdate.newCameraPosition(
+          CameraPosition(
+            target: LatLng(_myPosition.latitude, _myPosition.longitude),
+            zoom: 17,
+          ),
+        ),
+      );
+
+      // Obtenir le Placemark (adresse) depuis les coordonnées
+      Placemark _myPlaceMark;
+      try {
+        if (!GetPlatform.isWeb) {
+          List<Placemark> placeMarks = await placemarkFromCoordinates(
+            _myPosition.latitude,
+            _myPosition.longitude,
+          );
+          _myPlaceMark = placeMarks.first;
+        } else {
+          String _address = await getAddressfromGeocode(
+            LatLng(_myPosition.latitude, _myPosition.longitude),
+          );
+          _myPlaceMark = Placemark(
+            name: _address,
+            locality: '',
+            postalCode: '',
+            country: '',
+          );
+        }
+      } catch (e) {
+        // En cas d’échec de placemarkFromCoordinates
+        String _address = await getAddressfromGeocode(
+          LatLng(_myPosition.latitude, _myPosition.longitude),
+        );
+        _myPlaceMark = Placemark(
+          name: _address,
+          locality: '',
+          postalCode: '',
+          country: '',
+        );
+      }
+
+      // Affecter le Placemark récupéré à la bonne variable
+      if (fromAddress) {
+        _placemark = _myPlaceMark;
+      } else {
+        _pickPlacemark = _myPlaceMark;
+      }
+
+      // Créer l’objet AddressModel
+      _addressModel = AddressModel(
+        latitude: _myPosition.latitude.toString(),
+        longitude: _myPosition.longitude.toString(),
+        address: '${_myPlaceMark.name ?? ''}, '
+            '${_myPlaceMark.locality ?? ''}, '
+            '${_myPlaceMark.postalCode ?? ''}, '
+            '${_myPlaceMark.country ?? ''}',
+        addressType: addressTypeList[_addressTypeIndex],
+      );
+
+      print("Position récupérée : $_myPosition");
+    } catch (e) {
+      // En cas d'erreur, utiliser la position par défaut
+      _myPosition = Position(
+        latitude: defaultLatlng?.latitude ?? 0.0,
+        longitude: defaultLatlng?.longitude ?? 0.0,
+        timestamp: DateTime.now(),
+        accuracy: 1,
+        altitude: 1,
+        heading: 1,
+        speedAccuracy: 1,
+        speed: 1,
+        altitudeAccuracy: 1,
+        headingAccuracy: 1,
+      );
+
+      print("Erreur lors de la récupération de la position : $e");
+    }
+
+    _loading = false;
+    update();
+  }
 
   void setMapController(GoogleMapController mapController){
     _mapController=mapController;
@@ -77,6 +202,10 @@ class LocationController extends GetxController implements GetxService{
           );
         }
 
+        ResponseModel _responseModel=
+            await getZone(position.target.latitude.toString(), position.target.longitude.toString(), false);
+       // if button value is false we are in the service area
+        _buttonDisabled = !_responseModel.isSuccess;
         if(_changeAddress){
           String _address = await getAddressfromGeocode(
             LatLng(
@@ -92,6 +221,8 @@ class LocationController extends GetxController implements GetxService{
       }
       _loading=false;
       update();
+    }else{
+      _updateAddressData=true;
     }
   }
 
@@ -172,5 +303,37 @@ class LocationController extends GetxController implements GetxService{
   }
   String getUserAddressFromLocalStorage(){
     return locationRepo.getUserAddress();
+  }
+
+  void setAddressData(){
+    _position=_pickPosition;
+    _placemark=_pickPlacemark;
+    _updateAddressData=false;
+    update();
+  }
+  Future<ResponseModel> getZone(String lat, String lng, bool markerLoad) async {
+    late ResponseModel _responseModel;
+    if(markerLoad){
+      _loading=true;
+    }else{
+      _isLoading=true;
+    }
+    update();
+    Response response = await locationRepo.getZone(lat, lng);
+    if(response.statusCode==200){
+      _inZone=true;
+      _responseModel = ResponseModel(true, response.body["zone_id"].toString());
+    }else{
+      _inZone=true;
+      _responseModel = ResponseModel(true, response.statusText!);
+    }
+    if(markerLoad){
+      _loading=false;
+    }else{
+      _isLoading=false;
+    }
+    //print("zone response code is "+response.statusCode.toString()); //200, //404, //500 //403
+    update();
+    return _responseModel;
   }
 }

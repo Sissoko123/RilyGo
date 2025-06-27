@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:food_delivery/base/custom_button.dart';
 import 'package:food_delivery/controllers/location_controller.dart';
+import 'package:food_delivery/routes/route_helper.dart';
 import 'package:food_delivery/utils/colors.dart';
 import 'package:food_delivery/utils/dimensions.dart';
 import 'package:get/get.dart';
@@ -34,6 +36,12 @@ class _PickAddressMapState extends State<PickAddressMap> {
             double.parse(Get.find<LocationController>().getAddress["latitude"]),
             double.parse(Get.find<LocationController>().getAddress["longitude"]));
         _cameraPosition=CameraPosition(target: _initialPosition, zoom: 17);
+
+        Get.find<LocationController>().getZone(
+          _initialPosition.latitude.toString(),
+          _initialPosition.longitude.toString(),
+          false,
+        );
       }
     }
   }
@@ -91,6 +99,33 @@ class _PickAddressMapState extends State<PickAddressMap> {
                             ],
                           ),
                     ),
+                   ),
+                    Positioned(
+                      bottom: 80,
+                        left: Dimensions.radius20,
+                        right: Dimensions.width20,
+                        child: locationController.isLoading?Center(child: CircularProgressIndicator(),):CustomButton(
+
+                          buttonText: locationController.inZone?widget.fromAddress?'Pick Address':'Pick Location':'Service is not available in your area',
+                          onPressed: (locationController.buttonDisabled||locationController.loading)?null:(){
+                            if(locationController.pickPosition.latitude!=0&&
+                                locationController.pickPlacemark.name!=null){
+                              if(widget.fromAddress){
+                                if(widget.googleMapController!=null){
+                                  print("Now you clicked on this");
+                                  widget.googleMapController!.moveCamera(CameraUpdate.newCameraPosition(CameraPosition(target: LatLng(
+                                      locationController.pickPosition.latitude,
+                                      locationController.pickPosition.longitude
+                                  ))));
+                                  locationController.setAddressData();
+                                }
+                                //Get.back() creates update problem
+                                //list, a value
+                                Get.toNamed(RouteHelper.getAddressPage());
+                              }
+                            }
+                          },
+                        )
                     )
                   ],
                 ),

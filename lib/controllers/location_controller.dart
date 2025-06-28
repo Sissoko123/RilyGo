@@ -1,10 +1,13 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
+import 'package:food_delivery/data/api/api_checker.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_places_flutter/model/prediction.dart';
 import '../data/repository/location_repo.dart';
 import '../models/address_model.dart';
 import '../models/response_model.dart';
@@ -55,6 +58,11 @@ class LocationController extends GetxController implements GetxService{
    */
   bool _buttonDisabled=true;
   bool get buttonDisabled =>_buttonDisabled;
+
+  /*
+      save the google map suggestion for address
+   */
+  List<Prediction> _predictionList = [];
 
   Future<void> getCurrentLocation(
       bool fromAddress, {
@@ -336,4 +344,17 @@ class LocationController extends GetxController implements GetxService{
     update();
     return _responseModel;
   }
+   Future<List<Prediction>> searchLocation(BuildContext context, String text) async {
+        if(text.isEmpty){
+          Response response = await locationRepo.searchLocation(text);
+          if(response.statusCode==200&&response.body['status']=='OK'){
+            _predictionList=[];
+            response.body['predictions'].forEach((prediction)
+            =>_predictionList.add(Prediction.fromJson(prediction)));
+          }else{
+            ApiChecker.checkApi(response);
+          }
+        }
+        return _predictionList;
+    }
 }

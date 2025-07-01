@@ -15,7 +15,7 @@ class LocationDialogue extends StatelessWidget {
     final TextEditingController _controller = TextEditingController();
     return Container(
       padding: EdgeInsets.all(Dimensions.width10),
-      //alignment: Alignment.topCenter,
+      alignment: Alignment.topCenter,
       child: Material(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(Dimensions.radius20/2),
@@ -23,37 +23,63 @@ class LocationDialogue extends StatelessWidget {
         ),
         child: SizedBox(
           width: Dimensions.screenWidth,
-         /* child: TypeAheadField<String>(
-            suggestionsCallback: (String pattern) async {
-             //return await Get.find<LocationController>().searchLocation(pattern);
+          child: TypeAheadField<Prediction>(
+            suggestionsCallback: (pattern) async {
+              return await Get.find<LocationController>().searchLocation(
+                context,
+                pattern,
+              );
             },
             builder: (context, controller, focusNode) {
+              controller = _controller;
               return TextField(
                 controller: controller,
-                //focusNode: focusNode,
-                textInputAction: TextInputAction.search,
+                focusNode: focusNode,
                 autofocus: true,
                 textCapitalization: TextCapitalization.words,
                 keyboardType: TextInputType.streetAddress,
-               /* decoration: const InputDecoration(
-                  hintText: "Search location...",
-                  border: OutlineInputBorder(),
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: "Search location",
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      style: BorderStyle.none, width: 0
+                    ),
+                  ),
+                  hintStyle: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: Theme.of(context).disabledColor,
+                    fontSize: Dimensions.font16
+                  ),
                   labelText: 'Address',
-                ), */
+                ),
               );
             },
-            /*itemBuilder: (context, Prediction suggestion) {
-              return Row(
-                Icon(Icons.location_on),
-                Expanded(
-                  child: Text(
-                    "New Location"
-                  ),
-                )
+            itemBuilder: (context, Prediction suggestion) {
+              return Padding(
+                padding: EdgeInsets.all(Dimensions.width10),
+                child: Row(
+                  children: [
+                    Icon(Icons.location_on),
+                    Expanded(
+                      child: Text(
+                        suggestion.description!,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                          fontSize: Dimensions.font16
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               );
-            },*/
-            onSelected: (String suggestion) {},
-          ), */
+            },
+            onSelected: (suggestion) {
+               Get.find<LocationController>().setLocation(suggestion.placeId!, suggestion.description!, mapController);
+            },
+          ),
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:food_delivery/models/order_model.dart';
 import 'package:food_delivery/pages/address/add_address_page.dart';
 import 'package:food_delivery/pages/address/pick_address_map.dart';
 import 'package:food_delivery/pages/auth/sign_in_page.dart';
@@ -5,6 +6,7 @@ import 'package:food_delivery/pages/cart/cart_page.dart';
 import 'package:food_delivery/pages/food/popular_food_detail.dart';
 import 'package:food_delivery/pages/home/home_page.dart';
 import 'package:food_delivery/pages/home/main_food_page.dart';
+import 'package:food_delivery/pages/payment/payment_page.dart';
 import 'package:get/get.dart';
 
 import '../pages/food/recommended_food_detail.dart';
@@ -20,6 +22,8 @@ class RouteHelper{
 
   static const String addAddress="/add-address";
   static const String pickAddressMap="/pick-address";
+  static const String payment='/payment';
+  static const String orderSuccess='/order-successful';
 
   static String getSplashPage()=>'$splashPage';
   static String getInitial()=>'$initial';
@@ -29,7 +33,9 @@ class RouteHelper{
   static String getSignInPage()=>'$signIn';
   static String getAddressPage()=>'$addAddress';
   static String getPickAddressPage()=>'$pickAddressMap';
-
+  static String getPaymentPage(String id, int userID)=>'$payment?id=$id&userID=$userID';
+  static String getOrderSuccessPage()=>'$orderSuccess';
+  
   static List<GetPage> routes=[
     GetPage(name: pickAddressMap, page: (){
       PickAddressMap _pickAddress= Get.arguments;
@@ -71,5 +77,10 @@ class RouteHelper{
     GetPage(name: addAddress, page: (){
       return AddAddressPage();
     }),
+    GetPage(name: payment, page: ()=>PaymentPage(
+        orderModel: OrderModel(
+            id: int.parse(Get.parameters['id']!),
+            userId: int.parse(Get.parameters["userID"]!))
+    ))
   ];
 }

@@ -6,6 +6,7 @@ import 'package:food_delivery/controllers/cart_controller.dart';
 import 'package:food_delivery/controllers/location_controller.dart';
 import 'package:food_delivery/controllers/popular_product_controller.dart';
 import 'package:food_delivery/controllers/recommended_product_controller.dart';
+import 'package:food_delivery/controllers/user_controller.dart';
 import 'package:food_delivery/pages/home/main_food_page.dart';
 import 'package:food_delivery/utils/app_constants.dart';
 import 'package:food_delivery/utils/colors.dart';
@@ -206,11 +207,12 @@ class CartPage extends StatelessWidget {
               GestureDetector(
                 onTap: (){
                   if(Get.find<AuthController>().userLoggedIn()){
-                    print("logged in?");
+
                     if(Get.find<LocationController>().addressList.isEmpty){
                       Get.toNamed(RouteHelper.getAddressPage());
                     }else{
-                      Get.offNamed(RouteHelper.getInitial());
+                      //Get.offNamed(RouteHelper.getInitial());
+                      Get.offNamed(RouteHelper.getPaymentPage("100127", Get.find<UserController>().userModel!.id!));
                     }
                   }else{
                     Get.toNamed(RouteHelper.getSignInPage());

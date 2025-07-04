@@ -10,6 +10,7 @@ import 'package:food_delivery/pages/payment/payment_page.dart';
 import 'package:get/get.dart';
 
 import '../pages/food/recommended_food_detail.dart';
+import '../pages/payment/order_success_page.dart';
 import '../pages/splash/splash_page.dart';
 
 class RouteHelper{
@@ -34,7 +35,7 @@ class RouteHelper{
   static String getAddressPage()=>'$addAddress';
   static String getPickAddressPage()=>'$pickAddressMap';
   static String getPaymentPage(String id, int userID)=>'$payment?id=$id&userID=$userID';
-  static String getOrderSuccessPage()=>'$orderSuccess';
+  static String getOrderSuccessPage(String orderID, String status)=>'$orderSuccess?id=$orderID&status=$status';
   
   static List<GetPage> routes=[
     GetPage(name: pickAddressMap, page: (){
@@ -81,6 +82,9 @@ class RouteHelper{
         orderModel: OrderModel(
             id: int.parse(Get.parameters['id']!),
             userId: int.parse(Get.parameters["userID"]!))
+    )),
+    GetPage(name: orderSuccess, page: ()=>OrderSuccessPage(
+      orderID:Get.parameters['id']!, status:Get.parameters["status"].toString().contains("success")?1:0,
     ))
   ];
 }

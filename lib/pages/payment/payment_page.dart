@@ -5,15 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
-
-
 import '../../models/order_model.dart';
 import '../../routes/route_helper.dart';
 import '../../utils/app_constants.dart';
 import '../../utils/colors.dart';
 import '../../utils/dimensions.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 class PaymentPage extends StatefulWidget {
   final OrderModel orderModel;
   PaymentPage({required this.orderModel});
@@ -41,27 +38,36 @@ class _PaymentPageState extends State<PaymentPage> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 9_3 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13E233 Safari/601.1')
       ..setNavigationDelegate(
-        NavigationDelegate(
-          onPageStarted: (String url) {
-            print('Page started loading: $url');
-            setState(() {
-              _isLoading = true;
-            });
-            _redirect(url);
-          },
-          onPageFinished: (String url) {
-            print('Page finished loading: $url');
-            setState(() {
-              _isLoading = false;
-            });
-            _redirect(url);
-          },
-          onProgress: (int progress) {
-            print("WebView is loading (progress : $progress%)");
-          },
-        ),
-      )
-      ..loadRequest(Uri.parse(selectedUrl));
+    NavigationDelegate(
+    onNavigationRequest: (NavigationRequest request) {
+    print('Trying to navigate to: ${request.url}');
+    if (!_isInternalUrl(request.url)) {
+    _launchExternalUrl(request.url);
+    return NavigationDecision.prevent;
+    }
+    return NavigationDecision.navigate;
+    },
+    onPageStarted: (String url) {
+    print('Page started loading: $url');
+    setState(() {
+    _isLoading = true;
+    });
+    _redirect(url);
+    },
+    onPageFinished: (String url) {
+    print('Page finished loading: $url');
+    setState(() {
+    _isLoading = false;
+    });
+    _redirect(url);
+    },
+    onProgress: (int progress) {
+    print("WebView is loading (progress : $progress%)");
+    },
+    ),
+    )
+
+    ..loadRequest(Uri.parse(selectedUrl));
 
     controllerGlobal = controller;
   }
@@ -98,7 +104,7 @@ class _PaymentPageState extends State<PaymentPage> {
   }
 
   void _redirect(String url) {
-    print("redirect");
+    //print("redirect");
     if(_canRedirect) {
       bool _isSuccess = url.contains('success') && url.contains(AppConstants.BASE_URL);
       bool _isFailed = url.contains('fail') && url.contains(AppConstants.BASE_URL);
@@ -107,9 +113,9 @@ class _PaymentPageState extends State<PaymentPage> {
         _canRedirect = false;
       }
       if (_isSuccess) {
-        //Get.offNamed(RouteHelper.getOrderSuccessRoute(widget.orderModel.id.toString(), 'success'));
+        Get.offNamed(RouteHelper.getOrderSuccessPage(widget.orderModel.id.toString(), 'success'));
       } else if (_isFailed || _isCancel) {
-        //Get.offNamed(RouteHelper.getOrderSuccessRoute(widget.orderModel.id.toString(), 'fail'));
+        Get.offNamed(RouteHelper.getOrderSuccessPage(widget.orderModel.id.toString(), 'fail'));
       }else{
         print("Encountered problem");
       }
@@ -126,5 +132,19 @@ class _PaymentPageState extends State<PaymentPage> {
       // return Get.dialog(PaymentFailedDialog(orderID: widget.orderModel.id.toString()));
     }
   }
+
+  bool _isInternalUrl(String url) {
+    return url.contains(AppConstants.BASE_URL);
+  }
+
+  Future<void> _launchExternalUrl(String url) async {
+    print('Launching external url: $url');
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
 
 }

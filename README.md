@@ -5,7 +5,7 @@ Application de livraison de nourritures
 Fonctionnalités majeures : 
 1. Page d’accueil (affiche les produits populaires et les produits recommandés)
 
-2. Connexion et inscription (inscription avec numéro de mobile et code de vérification)
+2. Connexion et inscription (inscription avec mail et mot de passe)
 
 3. Panier d’achat (un vrai panier d’achat avec ajout et suppression d’articles en temps réel)
 
